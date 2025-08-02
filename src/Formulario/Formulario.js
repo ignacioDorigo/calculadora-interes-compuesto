@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import styled from "styled-components";
 import "./Formulario.css";
 import * as Yup from "yup";
+import Swal from "sweetalert2";
 
 const validationSchema = Yup.object({
   depositoInicial: Yup.number()
@@ -80,13 +81,39 @@ const estadoInicial = {
   interesEstimado: "",
 };
 
-const Formulario = () => {
+const Formulario = ({ calcularInteresCompuesto }) => {
   const formik = useFormik({
     initialValues: estadoInicial,
     validationSchema: validationSchema,
     onSubmit: async (formulario) => {
       try {
-        console.log(formulario);
+        let timerInterval;
+        Swal.fire({
+          title: "Calculando tu interes compuesto",
+          html: "Tu interes estara listo en <b></b> milisegundos.",
+          timer: 2000,
+          timerProgressBar: true,
+          didOpen: () => {
+            Swal.showLoading();
+            const timer = Swal.getPopup().querySelector("b");
+            timerInterval = setInterval(() => {
+              timer.textContent = `${Swal.getTimerLeft()}`;
+            }, 100);
+          },
+          willClose: () => {
+            clearInterval(timerInterval);
+          },
+        }).then((result) => {
+          if (result.dismiss === Swal.DismissReason.timer) {
+            const resultado = calcularInteresCompuesto(
+              Number(formulario.depositoInicial),
+              Number(formulario.constribucionAnual),
+              Number(formulario.aniosInvertida),
+              Number(formulario.interesEstimado)
+            );
+            console.log(`GANANCIA FINAL DE --> ${resultado}`);
+          }
+        });
       } catch (error) {
         console.log(error);
       }
