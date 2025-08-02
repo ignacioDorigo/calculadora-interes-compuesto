@@ -14,6 +14,10 @@ export const Section = styled.div`
   padding: 2rem 2.5rem;
   width: 50rem;
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
+  margin-top: 10rem;
+  @media (width<=764px) {
+    width: 90%;
+  }
 `;
 
 const App = () => {
